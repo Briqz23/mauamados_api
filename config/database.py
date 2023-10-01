@@ -1,13 +1,14 @@
 from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
+
 
 db_username = os.getenv("USERNAME")
 db_password = os.getenv("PASSWORD")
-connection = f'mongodb+srv://{db_username}:{db_password}cluster0.gmc47vx.mongodb.net/?retryWrites=true&w=majority'
 
+connection = 'mongodb://localhost:27017/'
 client = MongoClient(connection)
 
-db = client.todo_app
+db = client.mauamados_app
 
-collection_name = db["todos_app"]
-
+collection_name = db["mauamados_app"]

@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-from routes.todos_route import todo_api_router
-
+from routes.user_route import user_api_router
 
 app = FastAPI()
 
-app.include_router(todo_api_router)
+app.include_router(user_api_router)
