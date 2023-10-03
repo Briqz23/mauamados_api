@@ -1,0 +1,38 @@
+ {
+    "id": "6519c799f0bf1339cacef669",
+    "name": "Daniel Birquez",
+    "profile_picture": [
+      "https://avatars.githubusercontent.com/u/102300060?v=4",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTunt0o8j-PG83Jmkx65K15bvxU5FuzCKtNlVR_m97G0w&s"
+    ],
+    "age": 22,
+    "course": "Ciências da Computação",
+    "bio": "Dev Gang| Cervejinha| Academia| Osu",
+    "genero": "masculino",
+    "sexual_orientation": "heterosexual",
+    "tags_preferences": [
+      "Skol",
+      "Brahma",
+      "Osu",
+      "Java",
+      "Linux",
+      "494",
+      "FastAPI"
+    ]
+  },
+  {
+    "id": "651aaa95817d6795f7ac3ab6",
+    "name": "Lucas El Thiago",
+    "profile_picture": [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-HZGjbaO6P1bnnkHEvCrCAc92Vsa8xo_9qoU2XOrOoBdGugMcmvXINbhEFvV19Qy_rAg&usqp=CAU"
+    ],
+    "age": 20,
+    "course": "Ciências da Computação",
+    "bio": "Lindão",
+    "genero": "masculino",
+    "sexual_orientation": "heterosexual",
+    "tags_preferences": [
+      "DnD"
+    ]
+  }
+]

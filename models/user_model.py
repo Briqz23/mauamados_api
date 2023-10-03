@@ -13,6 +13,7 @@ class Genero(str,Enum):
     no_binary = "não-binário"
 
 class User(BaseModel):
+    ma_id: int
     name: str
     profile_picture: Optional[list] =  None  
     age: int
@@ -23,6 +24,7 @@ class User(BaseModel):
     tags_preferences: list
 
 class UpdateUser(BaseModel):
+    ma_id: int = None
     name: Optional[str] = None
     profile_picture: Optional[list] = None
     age: Optional[int] = None
