@@ -12,3 +12,6 @@ client = MongoClient(connection)
 db = client.mauamados
 
 collection_name_user = db["usuarios"]
+collection_name_match = db["matchs_likes"]
+collection_name_login = db["login"]
+collection_name_conversas = db["conversas"]

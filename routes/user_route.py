@@ -1,8 +1,9 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 
-from config.database import collection_name_user
+from config.database import collection_name_user,collection_name_match
 from models.user_model import User, UpdateUser
+from models.match_model import MatchLikes
 
 from schemas.user_schema import users_serializer
 from bson import ObjectId
@@ -34,6 +35,8 @@ async def create_user(user: User):
         raise HTTPException(status_code=400, detail="Only users over 18 can create an account")
 
     _id = collection_name_user.insert_one(dict(user))
+    match = MatchLikes(ma_id=user.ma_id)
+    collection_name_match.insert_one({"ma_id": dict(match)})
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
 
 @user_api_router.put("/user/{ma_id}")
