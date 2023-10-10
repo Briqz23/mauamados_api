@@ -1,5 +1,6 @@
 from fastapi import HTTPException
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
+import json
 
 from config.database import collection_name_user
 from models.user_model import User, UpdateUser
@@ -71,3 +72,44 @@ async def delete_user(ma_id:int):
     collection_name_user.find_one_and_delete({"ma_id": ma_id})
     return {"status": "ok"}
 
+@user_api_router.get("/user/matches/{ma_id}")
+async def get_matches(ma_id: int):
+    query = collection_name_user.find_one({"ma_id": ma_id}, {"match": 1, "_id": 0})
+    matches = query.get('match', [])
+    return Response(content=json.dumps(matches), media_type="application/json")
+
+
+@user_api_router.get("/user/likes/{ma_id}")
+async def get_likes(ma_id:int):
+    query = collection_name_user.find_one({"ma_id": ma_id},{"likes":1,"_id":0})
+    likes = query.get('likes',[])
+    return Response(content=json.dumps(likes),media_type="application/json")
+
+@user_api_router.get("/user/login/{ma_id}")
+async def get_login(ma_id:int):
+    query = collection_name_user.find_one({"ma_id":ma_id},{"login":1,"_id":0})
+    login = query.get('login',[])
+    return Response(content=json.dumps(login),media_type="application/json")
+
+@user_api_router.get("/user/senha/{ma_id}")
+async def get_senha(ma_id:int):
+    query = collection_name_user.find_one({"ma_id":ma_id},{"senha":1,"_id":0})
+    senha = query.get('senha',[])
+    return Response(content=json.dumps(senha),media_type="application/json")
+
+@user_api_router.put("/user/put_like/{ma_id}{like_id}")
+async def put_like(ma_id:int, like_id:str):
+    collection_name_user.update_one(
+        {"ma_id" : ma_id},
+        {"$push" :{"likes" : {"$each" : [like_id]}} }
+    )
+    return {"Daniel, fique tranquilo" : "O Like foi adicionado com sucesso!!!"}
+
+@user_api_router.put("/user/put_match/{ma_id}{match_id}")
+async def put_match(ma_id:int, match_id:str):
+    collection_name_user.update_one(
+        {"ma_id":ma_id},
+        {"$push" :{"match" : {"$each" : [match_id]}} }
+    )
+    return{"Daniel, fique tranquilo" : "O match foi adicionado com sucesso!!!"
+           " Já pode conservar com a gatinha, Marca um date" " Chama ela pra fazer Calestenia"}
