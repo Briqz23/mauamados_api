@@ -22,6 +22,10 @@ class User(BaseModel):
     genero: Genero 
     sexual_orientation: SexualOrientation
     tags_preferences: list
+    match : list
+    likes : list
+    login : str
+    senha : str
 
 class UpdateUser(BaseModel):
     ma_id: int = None
@@ -33,4 +37,8 @@ class UpdateUser(BaseModel):
     genero: Optional[Genero] = None
     sexual_orientation: Optional[SexualOrientation] = None
     tags_preferences: Optional[list] = None
+    match : Optional[list] = None
+    likes : Optional[list] = None
+    login : Optional[str] = None
+    senha : Optional[str] = None
 

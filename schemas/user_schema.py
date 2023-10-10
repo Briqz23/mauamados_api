@@ -9,7 +9,11 @@ def user_serializer(user) -> dict:
         "bio": user["bio"],
         "genero" : user["genero"],
         "sexual_orientation": user["sexual_orientation"],
-        "tags_preferences": user["tags_preferences"]
+        "tags_preferences": user["tags_preferences"],
+        "match" : user["match"],
+        "likes" : user["likes"],
+        "login" : user["login"],
+        "senha" : user["senha"]
     }
 
 def users_serializer(users) -> list:

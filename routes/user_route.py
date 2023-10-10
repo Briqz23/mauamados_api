@@ -1,10 +1,8 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 
-from config.database import collection_name_user,collection_name_match
+from config.database import collection_name_user
 from models.user_model import User, UpdateUser
-from models.match_model import MatchLikes
-
 from schemas.user_schema import users_serializer
 from bson import ObjectId
 
@@ -25,18 +23,17 @@ async def get_user(ma_id: int):
 
 @user_api_router.post("/user")
 async def create_user(user: User):
-    ma_id = user.ma_id
-    document = collection_name_user.find({"ma_id":ma_id})
 
-    if document:
-        return{"POXA DANIEL!!!": "Já existe um usuário com esse ID"}
+    # Tentando evitar usuários com ma_id duplicados
+    # ma_id = user.ma_id
+    # document = collection_name_user.find({"$exists":{"ma_id":ma_id}})
+    # if [document != {}]:
+        # return{"POXA DANIEL!!!": "Já existe um usuário com esse ID"}
     
     if not is_user_over_eighteen(user.age):
         raise HTTPException(status_code=400, detail="Only users over 18 can create an account")
 
     _id = collection_name_user.insert_one(dict(user))
-    match = MatchLikes(ma_id=user.ma_id)
-    collection_name_match.insert_one({"ma_id": dict(match)})
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
 
 @user_api_router.put("/user/{ma_id}")
@@ -59,6 +56,14 @@ async def update_user(ma_id: int, user: UpdateUser):
         collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$set": {'sexual_orientation': user.sexual_orientation}})
     if user.tags_preferences is not None:
         collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$push": {'tags_preferences': {"$each": user.tags_preferences}}})
+    if user.match is not None:
+        collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$push": {'match': {"$each": user.match}}})
+    if user.likes is not None:
+        collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$push": {'likes': {"$each": user.likes}}})
+    if user.login is not None:
+        collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$set": {'login': user.login}})
+    if user.senha is not None:
+        collection_name_user.find_one_and_update({"ma_id": ma_id}, {"$set": {'senha': user.senha}})
     return  users_serializer(collection_name_user.find({"ma_id": ma_id}))
 
 @user_api_router.delete("/user/{ma_id}")

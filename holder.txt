@@ -36,3 +36,25 @@
     ]
   }
 ]
+
+[
+  {
+    "id": "65252d348c8d03f21bb7d5de",
+    "ma_id": 15,
+    "name": "Lucas",
+    "profile_picture": [
+      "https://media.licdn.com/dms/image/D4D35AQEe21mIhfAiQg/profile-framedphoto-shrink_400_400/0/1659984117700?e=1697540400&v=beta&t=lyc9eRHpl-gTcgPeedc9q4PgwKzbObCDlxMTJoHeqyo"
+    ],
+    "age": 20,
+    "course": "CIC",
+    "bio": "GOSTOSA",
+    "genero": "feminio",
+    "sexual_orientation": "bisexual",
+    "tags_preferences": [
+      "lol",
+      "aero",
+      "escravidão",
+      "Gustavo"
+    ]
+  }
+]
