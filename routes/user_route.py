@@ -25,12 +25,6 @@ async def get_user(ma_id: int):
 @user_api_router.post("/user")
 async def create_user(user: User):
 
-    # Tentando evitar usuários com ma_id duplicados
-    # ma_id = user.ma_id
-    # document = collection_name_user.find({"$exists":{"ma_id":ma_id}})
-    # if [document != {}]:
-        # return{"POXA DANIEL!!!": "Já existe um usuário com esse ID"}
-    
     if not is_user_over_eighteen(user.age):
         raise HTTPException(status_code=400, detail="Only users over 18 can create an account")
 
@@ -113,3 +107,4 @@ async def put_match(ma_id:int, match_id:str):
     )
     return{"Daniel, fique tranquilo" : "O match foi adicionado com sucesso!!!"
            " Já pode conservar com a gatinha, Marca um date" " Chama ela pra fazer Calestenia"}
+
