@@ -91,7 +91,7 @@ async def get_senha(ma_id:int):
     senha = query.get('senha',[])
     return Response(content=json.dumps(senha),media_type="application/json")
 
-@user_api_router.put("/user/put_like/{ma_id}{like_id}")
+@user_api_router.put("/user/put_like/{ma_id}/{like_id}")
 async def put_like(ma_id:int, like_id:str):
     collection_name_user.update_one(
         {"ma_id" : ma_id},
@@ -99,7 +99,7 @@ async def put_like(ma_id:int, like_id:str):
     )
     return {"Daniel, fique tranquilo" : "O Like foi adicionado com sucesso!!!"}
 
-@user_api_router.put("/user/put_match/{ma_id}{match_id}")
+@user_api_router.put("/user/put_match/{ma_id}/{match_id}")
 async def put_match(ma_id:int, match_id:str):
     collection_name_user.update_one(
         {"ma_id":ma_id},
