@@ -79,12 +79,25 @@ async def get_likes(ma_id:int):
     likes = query.get('likes',[])
     return Response(content=json.dumps(likes),media_type="application/json")
 
-@user_api_router.get("/user/login/{ma_id}")
+
+#var url = Uri.parse('http://127.0.0.1:8000/login/?username=$username&password=$password');
+@user_api_router.get("/login/")
+async def login(username: str, password: str):
+    result = collection_name_user.find_one({"login": username, "senha": password}, {"ma_id": 1})
+
+    if result:
+        return {"ID": str(result["ma_id"])}
+    else:
+        raise HTTPException(status_code=404, detail="Username and/or password not found")
+
+
+"""
+@user_api_router.get("/user/logins/{ma_id}")
 async def get_login(ma_id:int):
     query = collection_name_user.find_one({"ma_id":ma_id},{"login":1,"_id":0})
     login = query.get('login',[])
     return Response(content=json.dumps(login),media_type="application/json")
-
+"""
 @user_api_router.get("/user/senha/{ma_id}")
 async def get_senha(ma_id:int):
     query = collection_name_user.find_one({"ma_id":ma_id},{"senha":1,"_id":0})

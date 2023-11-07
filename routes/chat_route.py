@@ -12,6 +12,7 @@ from schemas.user_schema import conversation_serializer
 chat_api_router = APIRouter()
 
 
+
 @chat_api_router.post("/conversations")
 def create_conversation(conversation: Conversation):
     conversation_dict = conversation.dict()
@@ -19,13 +20,13 @@ def create_conversation(conversation: Conversation):
     return {"messages": "Conversation created successfully"}
 
 # não funcionam ainda
-@chat_api_router.get("/conversations/{conversation_id}")
-async def get_conversation(conversation_id: str):
-    
-    conversation = await collection_name_conversas.find_one({"conversationId": conversation_id})
-    if conversation:
+@chat_api_router.get("/conversations/{id}")
+async def get_conversation(id: str):
+    conversation = await collection_name_conversas.find_one({"conversationId": id})
+    if conversation is not None:
         return conversation
     return {"messages": "Conversation not found"}
+
 
 @chat_api_router.put("/conversations/{conversation_id}/messages/")
 async def add_message(conversation_id: str, message: Message):
