@@ -7,7 +7,7 @@ from models.user_model import User, UpdateUser
 from schemas.user_schema import users_serializer
 from bson import ObjectId
 
-from services.services import is_user_over_eighteen
+from services.services import is_user_over_eighteen, validar_login, validate_password
 
 
 user_api_router = APIRouter()
@@ -26,7 +26,12 @@ async def get_user(ma_id: int):
 async def create_user(user: User):
 
     if not is_user_over_eighteen(user.age):
-        raise HTTPException(status_code=400, detail="Only users over 18 can create an account")
+        raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
+
+    if not validate_password(user.senha):
+        raise HTTPException(status_code=400, detail="Senha deve ter ao menos 8 caracteres")
+    if not validar_login(user.login):
+        raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
     _id = collection_name_user.insert_one(dict(user))
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
@@ -96,17 +101,19 @@ async def get_senha(ma_id:int):
     senha = query.get('senha',[])
     return Response(content=json.dumps(senha),media_type="application/json")
 
-@user_api_router.put("/user/put_like/{ma_id}/{like_id}")
-async def put_like(ma_id:int, like_id:str):
-    collection_name_user.update_one(
-        {"ma_id" : ma_id},
-        {"$push" :{"likes" : {"$each" : [like_id]}} }
-    )
-    return {"Daniel, fique tranquilo" : "O Like foi adicionado com sucesso!!!"}
 
-@user_api_router.put("/user/put_match/{ma_id}/{match_id}")
-async def put_match(ma_id:int, match_id:str):
-    collection_name_user.update_one(
+@user_api_router.post("/user/post_like/{ma_id}/{like_id}")
+async def post_like(ma_id: int, like_id: str):
+    # Assuming you have imported and initialized collection_name_user properly
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$push": {"likes": {"$each": [like_id]}}}
+    )
+    return {"Daniel, fique tranquilo": "O Like foi adicionado com sucesso!!!"}
+
+@user_api_router.post("/user/post_match/{ma_id}/{match_id}")
+async def post_match(ma_id:int, match_id:str):
+    collection_name_user.update_many(
         {"ma_id":ma_id},
         {"$push" :{"match" : {"$each" : [match_id]}} }
     )
