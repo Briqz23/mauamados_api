@@ -34,6 +34,8 @@ async def create_user(user: User):
         raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
     _id = collection_name_user.insert_one(dict(user))
+    def send_mail():
+        print("Um email de segurança foi enviado para o @maua.br do usuário")
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
 
 @user_api_router.put("/user/{ma_id}")
