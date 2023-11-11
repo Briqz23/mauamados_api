@@ -10,7 +10,9 @@ from bson import ObjectId
 from services.services import is_user_over_eighteen, validar_login, validate_password
 
 
+
 user_api_router = APIRouter()
+
 
 
 @user_api_router.get("/user")
@@ -118,6 +120,10 @@ async def post_match(ma_id:int, match_id:str):
     collection_name_user.update_many(
         {"ma_id":ma_id},
         {"$push" :{"match" : {"$each" : [match_id]}} }
+    )
+    collection_name_user.update_many(
+        {"ma_id":match_id},
+        {"$push" :{"match" : {"$each" : [ma_id]}} }
     )
     return{"Daniel, fique tranquilo" : "O match foi adicionado com sucesso!!!"
            " Já pode conservar com a gatinha, Marca um date" " Chama ela pra fazer Calestenia"}
