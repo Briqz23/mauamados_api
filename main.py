@@ -9,8 +9,12 @@ app.include_router(user_api_router)
 app.include_router(chat_api_router)
 
 origins = [
-    "http://localhost",
     "http://localhost:8080",
+    "http://127.0.0.1:8000/login/",
+    "http://127.0.0.1:8000/login",
+    "http://localhost:5000",
+    "http://localhost:5000/login/",
+    "http://localhost:5000/login",
     # Add more allowed origins as needed
 ]
 
