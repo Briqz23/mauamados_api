@@ -125,15 +125,21 @@ async def get_info(ma_id: int):
 
     if query:
         sexual_orientation = query.get("sexual_orientation")
+        genero = query.get("genero")
 
         # Modify the query based on sexual orientation
-        if sexual_orientation == "heterosexual":
-            # Filter for different sex
-            matches_query = {"genero": "feminino"}
+
+        if sexual_orientation == "heterosexual" and genero=="masculino":
+            # Filter for opposite sex
+            matches_query = {"genero": "feminino"} 
+
+        elif sexual_orientation == "heterosexual" and genero=="feminino":
+            # Filter for opposite sex
+            matches_query = {"genero": "masculino"} 
 
         elif sexual_orientation == "homosexual":
-            # Filter for the same sex
-            matches_query = {"genero": query.get("genero")}
+            # Filter for same sex
+            matches_query = {"genero": query.get(genero)}
 
         elif sexual_orientation == "bisexual":
             # Show potential matches of all genders
@@ -143,10 +149,18 @@ async def get_info(ma_id: int):
             # Handle other sexual orientations if needed
             matches_query = {}
 
-        # Retrieve detailed information for potential matches of the opposite sex
+        # Convert the set to a list for match and like fields
+        match_list = list(query.get("match", []))
+        like_list = list(query.get("likes", []))
+
+        # Retrieve detailed information for potential matches based on sexual orientation
         potential_matches = list(
             collection_name_user.find(
-                {"ma_id": {"$ne": ma_id}, "genero": matches_query["genero"]},
+                {
+                    "ma_id": {"$ne": ma_id},
+                    "genero": matches_query.get("genero"),
+                    "ma_id": {"$nin": match_list + like_list},
+                },
                 {"_id": 0, "ma_id": 1, "name": 1, "profile_picture": 1, "age": 1, "course": 1, "bio": 1,
                  "genero": 1, "sexual_orientation": 1, "tags_preferences": 1, "match": 1, "likes": 1,
                  "login": 1, "senha": 1}
@@ -161,4 +175,3 @@ async def get_info(ma_id: int):
             media_type="application/json",
             status_code=404,
         )
-
