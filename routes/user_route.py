@@ -115,7 +115,7 @@ async def post_like(ma_id: int, like_id: str):
     )
     return {"Daniel, fique tranquilo": "O Like foi adicionado com sucesso!!!"}
 
-@user_api_router.get("/user/get_matches/{ma_id}")
+@user_api_router.get("/user/get_possible_matches/{ma_id}")
 async def get_info(ma_id: int):
     # Get genero, match list, like list, sexual orientation
     query = collection_name_user.find_one(
@@ -143,7 +143,7 @@ async def get_info(ma_id: int):
 
         elif sexual_orientation == "bisexual":
             # Show potential matches of all genders
-            matches_query = {}
+            matches_query = {"genero": {"$in": ["masculino", "feminino"]}}
 
         else:
             # Handle other sexual orientations if needed
