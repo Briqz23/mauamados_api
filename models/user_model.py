@@ -3,14 +3,14 @@ from typing import Optional
 from pydantic import BaseModel
 
 class SexualOrientation(str, Enum):
-    heterosexual = "heterosexual"
-    homosexual = "homosexual"
-    bisexual = "bisexual"
+    heterosexual = "Heterossexual"
+    homosexual = "Homossexual"
+    bisexual = "Bissexual"
 
 class Genero(str,Enum):
-    male = "masculino"
-    famale = "feminino"
-    no_binary = "não-binário"
+    male = "Masculino"
+    famale = "Feminino"
+    no_binary = "Não-binário"
 
 class User(BaseModel):
     ma_id: int

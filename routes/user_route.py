@@ -129,21 +129,21 @@ async def get_info(ma_id: int):
 
         # Modify the query based on sexual orientation
 
-        if sexual_orientation == "heterosexual" and genero=="masculino":
+        if sexual_orientation == "Heterossexual" and genero=="Masculino":
             # Filter for opposite sex
-            matches_query = {"genero": "feminino"} 
+            matches_query = {"genero": "Feminino"} 
 
-        elif sexual_orientation == "heterosexual" and genero=="feminino":
+        elif sexual_orientation == "Heterossexual" and genero=="Feminino":
             # Filter for opposite sex
-            matches_query = {"genero": "masculino"} 
+            matches_query = {"genero": "Masculino"} 
 
-        elif sexual_orientation == "homosexual":
+        elif sexual_orientation == "Homossexual":
             # Filter for same sex
-            matches_query = {"genero": query.get(genero)}
+            matches_query = {"genero": query.get(genero), "ma_id": {"$ne": ma_id}}
 
         elif sexual_orientation == "bisexual":
             # Show potential matches of all genders
-            matches_query = {"genero": {"$in": ["masculino", "feminino"]}}
+            matches_query = {"genero": {"$in": ["Masculino", "Feminino"]}, "ma_id": {"$ne": ma_id}}
 
         else:
             # Handle other sexual orientations if needed
