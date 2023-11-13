@@ -9,7 +9,7 @@ class SexualOrientation(str, Enum):
 
 class Genero(str,Enum):
     male = "masculino"
-    famale = "feminio"
+    famale = "feminino"
     no_binary = "não-binário"
 
 class User(BaseModel):

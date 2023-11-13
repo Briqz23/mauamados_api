@@ -115,16 +115,50 @@ async def post_like(ma_id: int, like_id: str):
     )
     return {"Daniel, fique tranquilo": "O Like foi adicionado com sucesso!!!"}
 
-@user_api_router.post("/user/post_match/{ma_id}/{match_id}")
-async def post_match(ma_id:int, match_id:str):
-    collection_name_user.update_many(
-        {"ma_id":ma_id},
-        {"$push" :{"match" : {"$each" : [match_id]}} }
+@user_api_router.get("/user/get_matches/{ma_id}")
+async def get_info(ma_id: int):
+    # Get genero, match list, like list, sexual orientation
+    query = collection_name_user.find_one(
+        {"ma_id": ma_id},
+        {"genero": 1, "match": 1, "likes": 1, "sexual_orientation": 1, "_id": 0},
     )
-    collection_name_user.update_many(
-        {"ma_id":match_id},
-        {"$push" :{"match" : {"$each" : [ma_id]}} }
-    )
-    return{"Daniel, fique tranquilo" : "O match foi adicionado com sucesso!!!"
-           " Já pode conservar com a gatinha, Marca um date" " Chama ela pra fazer Calestenia"}
+
+    if query:
+        sexual_orientation = query.get("sexual_orientation")
+
+        # Modify the query based on sexual orientation
+        if sexual_orientation == "heterosexual":
+            # Filter for different sex
+            matches_query = {"genero": "feminino"}
+
+        elif sexual_orientation == "homosexual":
+            # Filter for the same sex
+            matches_query = {"genero": query.get("genero")}
+
+        elif sexual_orientation == "bisexual":
+            # Show potential matches of all genders
+            matches_query = {}
+
+        else:
+            # Handle other sexual orientations if needed
+            matches_query = {}
+
+        # Retrieve detailed information for potential matches of the opposite sex
+        potential_matches = list(
+            collection_name_user.find(
+                {"ma_id": {"$ne": ma_id}, "genero": matches_query["genero"]},
+                {"_id": 0, "ma_id": 1, "name": 1, "profile_picture": 1, "age": 1, "course": 1, "bio": 1,
+                 "genero": 1, "sexual_orientation": 1, "tags_preferences": 1, "match": 1, "likes": 1,
+                 "login": 1, "senha": 1}
+            )
+        )
+
+        return Response(content=json.dumps(potential_matches), media_type="application/json")
+
+    else:
+        return Response(
+            content=json.dumps({"error": "User not found"}),
+            media_type="application/json",
+            status_code=404,
+        )
 

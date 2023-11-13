@@ -16,26 +16,17 @@ git clone https://github.com/Kusko99/MauAmados.git
 
 * code . (abre o que tá na pasta no vscode)
 
-### Enviando o código que você fez
-
-* Adicona suas alterações
-
-```
-git add .
-```
-
-* Envelopa suas alterações
-```
-git commit -m "mensagem genérica"
-```
-
-* Envia suas alterações
-```
-git push
-```
 
 # Criar o ambiente venv
+```
+venv\Scripts\activate
+pip install -r requirements.txt
+```
 
+
+```
+git clone https://github.com/Kusko99/MauAmados.git
+```
 # Abrir o servidor 
 
 ```
