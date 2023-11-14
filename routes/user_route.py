@@ -1,8 +1,8 @@
-from ast import List
+from typing import List
 from fastapi import HTTPException
 from fastapi import APIRouter, Response
 import json
-
+from fastapi import FastAPI, Path, Query
 from config.database import collection_name_user
 from models.user_model import User, UpdateUser
 from schemas.user_schema import users_serializer
@@ -45,6 +45,12 @@ async def create_user(user: User):
 async def create_users(users: list[User]):
     _ids = collection_name_user.insert_many([dict(user) for user in users])
     return users_serializer(collection_name_user.find({"_id": {"$in": _ids.inserted_ids}}))
+
+@user_api_router.post("/user/delete_user/{ma_id}")
+async def delete_user(ma_id: int):
+    collection_name_user.delete_one({"ma_id": ma_id})
+    return {"Daniel, fique tranquilo": "O usuário foi deletado com sucesso!!!"}
+
 
 @user_api_router.put("/user/{ma_id}")
 async def update_user(ma_id: int, user: UpdateUser):
@@ -207,6 +213,24 @@ async def change_photo(ma_id: int, new_photo: str):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
 
+@user_api_router.post("user/upload_photo/{ma_id}/{new_photo}")
+
+async def upload_photo(ma_id: int, new_photo: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$push": {"profile_picture": new_photo}}
+    )
+    return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
+
+@user_api_router.post("user/delete_photo/{ma_id}/{photo_to_delete}")
+async def delete_photo(ma_id:int, photo_to_delete:str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$pull": {"profile_picture": photo_to_delete}}
+    )
+    return {"Daniel, fique tranquilo": "A foto foi deletada com sucesso!!!"}
+
+
 @user_api_router.post("/user/change_course/{ma_id}/{new_course}")
 async def change_course(ma_id: int, new_course: str):
     collection_name_user.update_many(
@@ -230,6 +254,7 @@ async def change_genero(ma_id: int, new_genero: str):
         {"$set": {"genero": new_genero}}
     )
     return {"Daniel, fique tranquilo": "O genero foi alterado com sucesso!!!"}
+
 @user_api_router.post("/user/change_sexual_orientation/{ma_id}/{new_sexual_orientation}")
 async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     collection_name_user.update_many(
@@ -238,13 +263,3 @@ async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     )
     return {"Daniel, fique tranquilo": "A orientação sexual foi alterada com sucesso!!!"}
 
-
-from typing import List
-
-@user_api_router.post("/user/change_single_tag_preference/{ma_id}/{old_tag}/{new_tag}")
-async def change_single_tag_preference(ma_id: int, old_tag: str, new_tag: str):
-    collection_name_user.update_many(
-        {"ma_id": ma_id, "tags_preferences": old_tag},
-        {"$set": {"tags_preferences.$": new_tag}}
-    )
-    return {"Daniel, fique tranquilo": "A tag de preferencia foi alterada com sucesso!!!"}
