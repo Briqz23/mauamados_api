@@ -1,3 +1,4 @@
+from ast import List
 from fastapi import HTTPException
 from fastapi import APIRouter, Response
 import json
@@ -160,17 +161,18 @@ async def get_info(ma_id: int):
 
         # Retrieve detailed information for potential matches based on sexual orientation
         potential_matches = list(
-            collection_name_user.find(
-                {
-                    "ma_id": {"$ne": ma_id},
-                    "genero": matches_query.get("genero"),
-                    "ma_id": {"$nin": match_list + like_list},
-                },
-                {"_id": 0, "ma_id": 1, "name": 1, "profile_picture": 1, "age": 1, "course": 1, "bio": 1,
-                 "genero": 1, "sexual_orientation": 1, "tags_preferences": 1, "match": 1, "likes": 1,
-                 "login": 1, "senha": 1}
-            )
-        )
+    collection_name_user.find(
+        {
+            "ma_id": {"$ne": ma_id},  # Exclude the current user
+            "genero": matches_query.get("genero"),
+            # Remove "ma_id": {"$ne": ma_id} from here
+            "ma_id": {"$nin": match_list + like_list},
+        },
+        {"_id": 0, "ma_id": 1, "name": 1, "profile_picture": 1, "age": 1, "course": 1, "bio": 1,
+         "genero": 1, "sexual_orientation": 1, "tags_preferences": 1, "match": 1, "likes": 1,
+         "login": 1, "senha": 1}
+    )
+)
 
         return Response(content=json.dumps(potential_matches), media_type="application/json")
 
@@ -181,7 +183,7 @@ async def get_info(ma_id: int):
             status_code=404,
         )
 
-@user_api_router.post("/user/change-name/{ma_id}/{new_name}")
+@user_api_router.post("/user/change_name/{ma_id}/{new_name}")
 async def change_name(ma_id: int, new_name: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -189,7 +191,7 @@ async def change_name(ma_id: int, new_name: str):
     )
     return {"Daniel, fique tranquilo": "O nome foi alterado com sucesso!!!"}
 
-@user_api_router.post("/user/change-age/{ma_id}/{new_age}")
+@user_api_router.post("/user/change_age/{ma_id}/{new_age}")
 async def change_age(ma_id: int, new_age: int):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -197,7 +199,7 @@ async def change_age(ma_id: int, new_age: int):
     )
     return {"Daniel, fique tranquilo": "A idade foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change-photo/{ma_id}/{new_photo}")
+@user_api_router.post("/user/change_photo/{ma_id}/{new_photo}")
 async def change_photo(ma_id: int, new_photo: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -205,7 +207,7 @@ async def change_photo(ma_id: int, new_photo: str):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change-course/{ma_id}/{new_course}")
+@user_api_router.post("/user/change_course/{ma_id}/{new_course}")
 async def change_course(ma_id: int, new_course: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -213,7 +215,7 @@ async def change_course(ma_id: int, new_course: str):
     )
     return {"Daniel, fique tranquilo": "O curso foi alterado com sucesso!!!"}
 
-@user_api_router.post("/user/change-bio/{ma_id}/{new_bio}")
+@user_api_router.post("/user/change_bio/{ma_id}/{new_bio}")
 async def change_bio(ma_id: int, new_bio: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -221,14 +223,14 @@ async def change_bio(ma_id: int, new_bio: str):
     )
     return {"Daniel, fique tranquilo": "A bio foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change-genero/{ma_id}/{new_genero}")
+@user_api_router.post("/user/change_genero/{ma_id}/{new_genero}")
 async def change_genero(ma_id: int, new_genero: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$set": {"genero": new_genero}}
     )
     return {"Daniel, fique tranquilo": "O genero foi alterado com sucesso!!!"}
-@user_api_router.post("/user/change-sexual_orientation/{ma_id}/{new_sexual_orientation}")
+@user_api_router.post("/user/change_sexual_orientation/{ma_id}/{new_sexual_orientation}")
 async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -236,10 +238,13 @@ async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     )
     return {"Daniel, fique tranquilo": "A orientação sexual foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change-tags_preferences/{ma_id}/{new_tags_preferences}")
-async def change_tags_preferences(ma_id: int, new_tags_preferences: list[str]):
+
+from typing import List
+
+@user_api_router.post("/user/change_single_tag_preference/{ma_id}/{old_tag}/{new_tag}")
+async def change_single_tag_preference(ma_id: int, old_tag: str, new_tag: str):
     collection_name_user.update_many(
-        {"ma_id": ma_id},
-        {"$set": {"tags_preferences": new_tags_preferences}}
+        {"ma_id": ma_id, "tags_preferences": old_tag},
+        {"$set": {"tags_preferences.$": new_tag}}
     )
-    return {"Daniel, fique tranquilo": "As tags de preferência foram alteradas com sucesso!!!"}
+    return {"Daniel, fique tranquilo": "A tag de preferencia foi alterada com sucesso!!!"}
