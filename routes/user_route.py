@@ -40,6 +40,11 @@ async def create_user(user: User):
         print("Um email de segurança foi enviado para o @maua.br do usuário")
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
 
+@user_api_router.post("/users")
+async def create_users(users: list[User]):
+    _ids = collection_name_user.insert_many([dict(user) for user in users])
+    return users_serializer(collection_name_user.find({"_id": {"$in": _ids.inserted_ids}}))
+
 @user_api_router.put("/user/{ma_id}")
 async def update_user(ma_id: int, user: UpdateUser):
     if user.ma_id is not None:
