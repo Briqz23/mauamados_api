@@ -180,3 +180,66 @@ async def get_info(ma_id: int):
             media_type="application/json",
             status_code=404,
         )
+
+@user_api_router.post("/user/change-name/{ma_id}/{new_name}")
+async def change_name(ma_id: int, new_name: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"name": new_name}}
+    )
+    return {"Daniel, fique tranquilo": "O nome foi alterado com sucesso!!!"}
+
+@user_api_router.post("/user/change-age/{ma_id}/{new_age}")
+async def change_age(ma_id: int, new_age: int):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"age": new_age}}
+    )
+    return {"Daniel, fique tranquilo": "A idade foi alterada com sucesso!!!"}
+
+@user_api_router.post("/user/change-photo/{ma_id}/{new_photo}")
+async def change_photo(ma_id: int, new_photo: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"profile_picture": new_photo}}
+    )
+    return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
+
+@user_api_router.post("/user/change-course/{ma_id}/{new_course}")
+async def change_course(ma_id: int, new_course: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"course": new_course}}
+    )
+    return {"Daniel, fique tranquilo": "O curso foi alterado com sucesso!!!"}
+
+@user_api_router.post("/user/change-bio/{ma_id}/{new_bio}")
+async def change_bio(ma_id: int, new_bio: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"bio": new_bio}}
+    )
+    return {"Daniel, fique tranquilo": "A bio foi alterada com sucesso!!!"}
+
+@user_api_router.post("/user/change-genero/{ma_id}/{new_genero}")
+async def change_genero(ma_id: int, new_genero: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"genero": new_genero}}
+    )
+    return {"Daniel, fique tranquilo": "O genero foi alterado com sucesso!!!"}
+@user_api_router.post("/user/change-sexual_orientation/{ma_id}/{new_sexual_orientation}")
+async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"sexual_orientation": new_sexual_orientation}}
+    )
+    return {"Daniel, fique tranquilo": "A orientação sexual foi alterada com sucesso!!!"}
+
+@user_api_router.post("/user/change-tags_preferences/{ma_id}/{new_tags_preferences}")
+async def change_tags_preferences(ma_id: int, new_tags_preferences: list[str]):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$set": {"tags_preferences": new_tags_preferences}}
+    )
+    return {"Daniel, fique tranquilo": "As tags de preferência foram alteradas com sucesso!!!"}
