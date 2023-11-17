@@ -355,33 +355,7 @@
         ],
     "login": "lilia@maua.br",
     "senha": "12345678"
-  },
-  
-  
-  {
-    "ma_id": 14,
-    "name": "Ariel",
-    "profile_picture": [
-      "https://cdn.discordapp.com/attachments/837322210732671016/1173751942883835925/image.png?ex=656518ae&is=6552a3ae&hm=1a357e926d5c8d169d83bf300a24116fddd5f052eb13814c617d8ba82481634d&"
-    ],
-    "age":22,
-    "course": "Engenharia da Computação",
-    "bio": "Vamos duo bot! Eu vou de Luluzinha pra você.",
-    "genero": "Não-binário",
-    "sexual_orientation": "Bissexual",
-    "tags_preferences": [
-      "LoL", "Matemática", "Dua Lipa"
-    ],
-    "match": [
-  
-    ],
-    "likes": [
-  
-        ],
-    "login": "ariel@maua.br",
-    "senha": "12345678"
-  },
-  
+  },  
   
   {
     "ma_id": 15,
