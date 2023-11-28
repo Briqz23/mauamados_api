@@ -16,6 +16,8 @@ from services.services import is_user_over_eighteen, validar_login, validate_pas
 user_api_router = APIRouter()
 
 
+password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 @user_api_router.get("/user")
 async def get_users():
@@ -30,7 +32,6 @@ async def get_user(ma_id: int):
 @user_api_router.post("/user")
 
 async def create_user(user: User):
-    password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     
     if not is_user_over_eighteen(user.age):
         raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
@@ -124,12 +125,18 @@ async def get_likes(ma_id:int):
 #var url = Uri.parse('http://127.0.0.1:8000/login/?username=$username&password=$password');
 @user_api_router.get("/login/")
 async def login(username: str, password: str):
-    result = collection_name_user.find_one({"login": username, "senha": password}, {"ma_id": 1})
+    # Encontrar o usuário no banco de dados pelo nome de usuário
+    user_data = collection_name_user.find_one({"login": username}, {"ma_id": 1, "senha": 1})
 
-    if result:
-        return {"ID": str(result["ma_id"])}
+    if user_data:
+        # Verificar a senha usando a função verify do CryptContext
+        if password_context.verify(password, user_data["senha"]):
+            return {"ID": str(user_data["ma_id"])}
+        else:
+            raise HTTPException(status_code=401, detail="Senha incorreta")
     else:
-        raise HTTPException(status_code=404, detail="Username and/or password not found")
+        raise HTTPException(status_code=404, detail="Username not found")
+    
 
 @user_api_router.get("/user/senha/{ma_id}")
 async def get_senha(ma_id:int):
@@ -233,13 +240,15 @@ async def change_photo(ma_id: int, new_photo: str):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
 
-@user_api_router.post("user/upload_photo/{ma_id}/{new_photo}")
-async def upload_photo(ma_id: int, new_photo: str):
+@user_api_router.post("/user/add_photo/{ma_id}/{new_photo}")
+async def add_photo(ma_id: int, new_photo: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
-        {"$push": {"profile_picture": new_photo}}
+        {"$push": {"profile_picture": {"$each": [new_photo]}}}
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
+
+
 
 @user_api_router.post("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
 async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
