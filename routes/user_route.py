@@ -220,13 +220,24 @@ async def change_photo(ma_id: int, new_photo: str):
     return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
 
 @user_api_router.post("user/upload_photo/{ma_id}/{new_photo}")
-
 async def upload_photo(ma_id: int, new_photo: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$push": {"profile_picture": new_photo}}
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
+
+@user_api_router.post("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
+async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$pull": {"profile_picture": photo_to_change}}
+    )
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$push": {"profile_picture": {"$each": [photo_to_change], "$position": new_index}}}
+    )
+    return {"Daniel, fique tranquilo": "A foto foi alterada de posição com sucesso!!!"}
 
 @user_api_router.post("user/delete_photo/{ma_id}/{photo_to_delete}")
 async def delete_photo(ma_id:int, photo_to_delete:str):
