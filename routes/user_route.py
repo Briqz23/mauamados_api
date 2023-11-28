@@ -28,32 +28,35 @@ async def get_users():
 async def get_user(ma_id: int):
     return users_serializer(collection_name_user.find({"ma_id":ma_id}))
 
+from fastapi import HTTPException
 
-@user_api_router.post("/user")
+@user_api_router.post("/users")
+async def create_users(users: list[User]):
+    created_users = []
+    for user in users:
+        if not is_user_over_eighteen(user.age):
+            raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
 
-async def create_user(user: User):
-    
-    if not is_user_over_eighteen(user.age):
-        raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
+        if not validate_password(user.senha):
+            raise HTTPException(status_code=400, detail="Senha deve ter ao menos 8 caracteres")
+        
+        if not validar_login(user.login):
+            raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
-    if not validate_password(user.senha):
-        raise HTTPException(status_code=400, detail="Senha deve ter ao menos 8 caracteres")
-    
-    if not validar_login(user.login):
-        raise HTTPException(status_code=400, detail="login deve ter @maua.br")
+        # Hash da senha usando bcrypt
+        hashed_password = password_context.hash(user.senha)
+        
+        # Substituir a senha do usuário pelo hash gerado
+        user.senha = hashed_password
 
-    # Hash da senha usando bcrypt
-    hashed_password = password_context.hash(user.senha)
-    
-    # Substituir a senha do usuário pelo hash gerado
-    user.senha = hashed_password
+        _id = collection_name_user.insert_one(dict(user))
+        created_users.append(collection_name_user.find_one({"_id": _id.inserted_id}))
 
-    _id = collection_name_user.insert_one(dict(user))
-    
-    def send_mail():
-        print("Um email de segurança foi enviado para o @maua.br do usuário")
-    
-    return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
+        def send_mail():
+            print("Um email de segurança foi enviado para o @maua.br do usuário")
+
+    return users_serializer(created_users)
+
 
 
 @user_api_router.post("/users")
@@ -233,15 +236,15 @@ async def change_age(ma_id: int, new_age: int):
     return {"Daniel, fique tranquilo": "A idade foi alterada com sucesso!!!"}
 
 
-@user_api_router.post("/user/add_photo/{ma_id}/{new_photo}")
-async def add_photo(ma_id: int, new_photo: str):
+from fastapi import Query
+
+@user_api_router.post("/user/add_photo/{ma_id}")
+async def add_photo(ma_id: int, new_photo: str = Query(...)):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$push": {"profile_picture": {"$each": [new_photo]}}}
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
-
-
 
 @user_api_router.post("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
 async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
