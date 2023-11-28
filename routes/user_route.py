@@ -7,6 +7,7 @@ from config.database import collection_name_user
 from models.user_model import User, UpdateUser
 from schemas.user_schema import users_serializer
 from bson import ObjectId
+from passlib.context import CryptContext
 
 from services.services import is_user_over_eighteen, validar_login, validate_password
 
@@ -25,21 +26,34 @@ async def get_users():
 async def get_user(ma_id: int):
     return users_serializer(collection_name_user.find({"ma_id":ma_id}))
 
-@user_api_router.post("/user")
-async def create_user(user: User):
 
+@user_api_router.post("/user")
+
+async def create_user(user: User):
+    password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
     if not is_user_over_eighteen(user.age):
         raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
 
     if not validate_password(user.senha):
         raise HTTPException(status_code=400, detail="Senha deve ter ao menos 8 caracteres")
+    
     if not validar_login(user.login):
         raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
+    # Hash da senha usando bcrypt
+    hashed_password = password_context.hash(user.senha)
+    
+    # Substituir a senha do usuário pelo hash gerado
+    user.senha = hashed_password
+
     _id = collection_name_user.insert_one(dict(user))
+    
     def send_mail():
         print("Um email de segurança foi enviado para o @maua.br do usuário")
+    
     return users_serializer(collection_name_user.find({"_id": _id.inserted_id}))
+
 
 @user_api_router.post("/users")
 async def create_users(users: list[User]):
