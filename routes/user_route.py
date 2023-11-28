@@ -232,13 +232,6 @@ async def change_age(ma_id: int, new_age: int):
     )
     return {"Daniel, fique tranquilo": "A idade foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change_photo/{ma_id}/{new_photo}")
-async def change_photo(ma_id: int, new_photo: str):
-    collection_name_user.update_many(
-        {"ma_id": ma_id},
-        {"$set": {"profile_picture": new_photo}}
-    )
-    return {"Daniel, fique tranquilo": "A foto foi alterada com sucesso!!!"}
 
 @user_api_router.post("/user/add_photo/{ma_id}/{new_photo}")
 async def add_photo(ma_id: int, new_photo: str):
