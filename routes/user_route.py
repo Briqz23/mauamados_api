@@ -46,10 +46,11 @@ async def create_users(users: list[User]):
     _ids = collection_name_user.insert_many([dict(user) for user in users])
     return users_serializer(collection_name_user.find({"_id": {"$in": _ids.inserted_ids}}))
 
-@user_api_router.post("/user/delete_users")
-async def delete_users(users: list[User]):
-    _ids = collection_name_user.delete_many([dict(user) for user in users])
-    return {"Daniel, fique tranquilo": "Os usuários foram deletados com sussessosss!!!"}
+@user_api_router.delete("/delete_all_users")
+async def delete_all_users():
+    collection_name_user.delete_many({})
+    return {"Daniel, fique tranquilo": "Todos os usuários foram deletados com sucesso!!!"}
+
 
 @user_api_router.post("/user/delete_user/{ma_id}")
 async def delete_user(ma_id: int):
