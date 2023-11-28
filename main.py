@@ -15,6 +15,8 @@ origins = [
     "http://localhost:5000",
     "http://localhost:5000/login/",
     "http://localhost:5000/login",
+    "http://localhost:5000/user",
+   "http://localhost:5000/user/"
     # Add more allowed origins as needed
 ]
 
