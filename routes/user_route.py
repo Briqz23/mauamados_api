@@ -1,15 +1,13 @@
 from typing import List
-from fastapi import HTTPException
-from fastapi import APIRouter, Response
+from fastapi import HTTPException, APIRouter, Response, Query, Path, FastAPI
 import json
-from fastapi import FastAPI, Path, Query
 from config.database import collection_name_user
 from models.user_model import User, UpdateUser
 from schemas.user_schema import users_serializer
 from bson import ObjectId
 from passlib.context import CryptContext
-
 from services.services import is_user_over_eighteen, validar_login, validate_password
+
 
 
 
@@ -70,7 +68,7 @@ async def delete_all_users():
     return {"Daniel, fique tranquilo": "Todos os usuários foram deletados com sucesso!!!"}
 
 
-@user_api_router.post("/user/delete_user/{ma_id}")
+@user_api_router.delete("/user/delete_user/{ma_id}")
 async def delete_user(ma_id: int):
     collection_name_user.delete_one({"ma_id": ma_id})
     return {"Daniel, fique tranquilo": "O usuário foi deletado com sucesso!!!"}
@@ -169,33 +167,33 @@ async def get_info(ma_id: int):
         sexual_orientation = query.get("sexual_orientation")
         genero = query.get("genero")
 
-        # Modify the query based on sexual orientation
+        
 
         if sexual_orientation == "Heterossexual" and genero=="Masculino":
-            # Filter for opposite sex
+            
             matches_query = {"genero": "Feminino", "sexual_orientation":["Heterossexual", "Bissexual"]} 
 
         elif sexual_orientation == "Heterossexual" and genero=="Feminino":
-            # Filter for opposite sex
+            
             matches_query = {"genero": "Masculino", "sexual_orientation":["Heterossexual", "Bissexual"]} 
 
         elif sexual_orientation == "Homossexual":
-            # Filter for same sex
+            
             matches_query = {"genero": query.get(genero), "ma_id": {"$ne": ma_id}}
         #caso n ache nada
         elif sexual_orientation == "Bissexual":
-            # Show potential matches of all genders
+           
             matches_query = {"genero": {"$in": ["Masculino", "Feminino"]}, "ma_id": {"$ne": ma_id}}
 
         else:
-            # Handle other sexual orientations if needed
+           
             matches_query = {}
 
-        # Convert the set to a list for match and like fields
+       
         match_list = list(query.get("match", []))
         like_list = list(query.get("likes", []))
 
-        # Retrieve detailed information for potential matches based on sexual orientation
+        
         potential_matches = list(
     collection_name_user.find(
         {
@@ -219,7 +217,7 @@ async def get_info(ma_id: int):
             status_code=404,
         )
 
-@user_api_router.post("/user/change_name/{ma_id}/{new_name}")
+@user_api_router.put("/user/change_name/{ma_id}/{new_name}")
 async def change_name(ma_id: int, new_name: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -227,7 +225,7 @@ async def change_name(ma_id: int, new_name: str):
     )
     return {"Daniel, fique tranquilo": "O nome foi alterado com sucesso!!!"}
 
-@user_api_router.post("/user/change_age/{ma_id}/{new_age}")
+@user_api_router.put("/user/change_age/{ma_id}/{new_age}")
 async def change_age(ma_id: int, new_age: int):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -236,7 +234,22 @@ async def change_age(ma_id: int, new_age: int):
     return {"Daniel, fique tranquilo": "A idade foi alterada com sucesso!!!"}
 
 
-from fastapi import Query
+@user_api_router.post("/user/add_tag_preferences/{ma_id}/{new_tag}")
+async def add_tags_preferences(ma_id: int, new_tag: str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$push": {"tags_preferences": {"$each": [new_tag]}}}
+    )
+    return {"Daniel, fique tranquilo": "A tag foi adicionada com sucesso!!!"}
+
+@user_api_router.delete("/user/remove_tag_preference/{ma_id}/{tag_to_delete}")
+async def remove_tags_preference(ma_id:int, tag_to_delete:str):
+    collection_name_user.update_many(
+        {"ma_id": ma_id},
+        {"$pull": {"tags_preferences": tag_to_delete}}
+    )
+    return {"Daniel, fique tranquilo": "A tag foi removida com sucesso!!!"}
+
 
 @user_api_router.post("/user/add_photo/{ma_id}")
 async def add_photo(ma_id: int, new_photo: str = Query(...)):
@@ -246,7 +259,7 @@ async def add_photo(ma_id: int, new_photo: str = Query(...)):
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
 
-@user_api_router.post("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
+@user_api_router.put("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
 async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -258,7 +271,7 @@ async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada de posição com sucesso!!!"}
 
-@user_api_router.post("user/delete_photo/{ma_id}/{photo_to_delete}")
+@user_api_router.delete("user/delete_photo/{ma_id}/{photo_to_delete}")
 async def delete_photo(ma_id:int, photo_to_delete:str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -267,7 +280,7 @@ async def delete_photo(ma_id:int, photo_to_delete:str):
     return {"Daniel, fique tranquilo": "A foto foi deletada com sucesso!!!"}
 
 
-@user_api_router.post("/user/change_course/{ma_id}/{new_course}")
+@user_api_router.put("/user/change_course/{ma_id}/{new_course}")
 async def change_course(ma_id: int, new_course: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -275,7 +288,7 @@ async def change_course(ma_id: int, new_course: str):
     )
     return {"Daniel, fique tranquilo": "O curso foi alterado com sucesso!!!"}
 
-@user_api_router.post("/user/change_bio/{ma_id}/{new_bio}")
+@user_api_router.put("/user/change_bio/{ma_id}/{new_bio}")
 async def change_bio(ma_id: int, new_bio: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -283,7 +296,7 @@ async def change_bio(ma_id: int, new_bio: str):
     )
     return {"Daniel, fique tranquilo": "A bio foi alterada com sucesso!!!"}
 
-@user_api_router.post("/user/change_genero/{ma_id}/{new_genero}")
+@user_api_router.put("/user/change_genero/{ma_id}/{new_genero}")
 async def change_genero(ma_id: int, new_genero: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
@@ -291,7 +304,7 @@ async def change_genero(ma_id: int, new_genero: str):
     )
     return {"Daniel, fique tranquilo": "O genero foi alterado com sucesso!!!"}
 
-@user_api_router.post("/user/change_sexual_orientation/{ma_id}/{new_sexual_orientation}")
+@user_api_router.put("/user/change_sexual_orientation/{ma_id}/{new_sexual_orientation}")
 async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     collection_name_user.update_many(
         {"ma_id": ma_id},
