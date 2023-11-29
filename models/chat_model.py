@@ -2,14 +2,12 @@ from typing import List
 from pydantic import BaseModel
 from typing import List
 
-class Message(BaseModel):
-    id: str
-    sender: str
-    recipient: str
-    content: str
-    timestamp: str
+class Mensagem(BaseModel):
+    remetente: int
+    receptor: int
+    corpo: str
 
-class Conversation(BaseModel):
-    conversationId: str
-    participants: List[str]
-    messages: List[Message]
+class Conversa(BaseModel):
+    ma_id_user1 : int
+    ma_id_user2: int
+    conversa: list[Mensagem]
