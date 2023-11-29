@@ -48,20 +48,9 @@ async def get_all_chats(maua_id: int):
     todas_as_conversas_json = jsonable_encoder(todas_as_conversas, by_alias=True)
     return {"todas_as_conversas": todas_as_conversas_json}
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from bson import ObjectId
-
-router = APIRouter()
-
-class Mensagem(BaseModel):
-    remetente: int
-    receptor: int
-    corpo: str
 
 @chat_api_router.post("/enviar_mensagem/")
 async def add_message(mensagem: Mensagem):
-    # Verificar se a conversa existe
     conversa = collection_name_conversas.find_one({
         "$or": [
             {"ma_id_user1": mensagem.remetente, "ma_id_user2": mensagem.receptor},
@@ -72,7 +61,6 @@ async def add_message(mensagem: Mensagem):
     if not conversa:
         raise HTTPException(status_code=404, detail="Conversa não encontrada")
 
-    # Adicionar a mensagem à conversa
     collection_name_conversas.update_one(
         {"_id": conversa["_id"]},
         {"$push": {"mensagens": mensagem.dict()}}
