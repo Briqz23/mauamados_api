@@ -19,22 +19,3 @@ def user_serializer(user) -> dict:
 def users_serializer(users) -> list:
     return [user_serializer(user) for user in users]
 
-def message_serializer(message) -> dict:
-    return {
-        "id": message.id,
-        "sender": message.sender,
-        "recipient": message.recipient,
-        "content": message.content,
-        "timestamp": message.timestamp
-    }
-
-def conversation_serializer(conversation) -> dict:
-    return {
-        "conversationId": conversation.conversationId,
-        "participants": conversation.participants,
-        "messages": [message_serializer(message) for message in conversation.messages]
-    }
-
-
-def conversations_serializer(conversations) -> list:
-    return [conversation_serializer(conversation) for conversation in conversations]
