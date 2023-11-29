@@ -26,7 +26,6 @@ async def get_users():
 async def get_user(ma_id: int):
     return users_serializer(collection_name_user.find({"ma_id":ma_id}))
 
-from fastapi import HTTPException
 
 @user_api_router.post("/users")
 async def create_users(users: list[User]):
