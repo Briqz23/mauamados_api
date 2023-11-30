@@ -330,3 +330,20 @@ async def change_sexual_orientation(ma_id: int, new_sexual_orientation: str):
     )
     return {"Daniel, fique tranquilo": "A orientação sexual foi alterada com sucesso!!!"}
 
+
+@user_api_router.delete("/user/remove_like/{ma_id}/{like_id}")
+async def remove_like(ma_id: int, like_id: str):
+    user = collection_name_user.find_one({"ma_id": ma_id})
+    likes = user.get("likes",[])
+    if like_id in likes:
+        likes.remove(like_id)
+
+        collection_name_user.update_one(
+            {"ma_id": ma_id},
+            {"$set": {"likes": likes}}
+        )
+
+        return {"FOI DANEIL!!!": f"Removemos o like {like_id} com sucesso, a feinha perdeu sua chance"}
+
+    else:
+        return HTTPException(status_code=404,detail=f"Poxa Daniel!!!! Num deu pra remover o like {like_id}")
