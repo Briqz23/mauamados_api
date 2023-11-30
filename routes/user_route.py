@@ -7,7 +7,7 @@ from schemas.user_schema import user_serializer, users_serializer
 from bson import ObjectId
 from passlib.context import CryptContext
 from services.services import is_user_over_eighteen, validar_login, validate_password
-
+from fastapi import Body
 
 
 
@@ -276,8 +276,9 @@ async def add_photo(ma_id: int, new_photo: str = Query(...)):
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
 
-@user_api_router.put("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
-async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
+
+@user_api_router.put("/user/photo_new_index/{ma_id}/{new_index}")
+async def photo_new_index(ma_id: int, new_index: int, photo_to_change: str = Body(...)):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$pull": {"profile_picture": photo_to_change}}
@@ -288,14 +289,14 @@ async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada de posição com sucesso!!!"}
 
-@user_api_router.delete("user/delete_photo/{ma_id}/{photo_to_delete}")
-async def delete_photo(ma_id:int, photo_to_delete:str):
+
+@user_api_router.delete("/user/delete_photo/{ma_id}")
+async def delete_photo(ma_id: int, photo_to_delete: str = Body(...)):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$pull": {"profile_picture": photo_to_delete}}
     )
     return {"Daniel, fique tranquilo": "A foto foi deletada com sucesso!!!"}
-
 
 @user_api_router.put("/user/change_course/{ma_id}/{new_course}")
 async def change_course(ma_id: int, new_course: str):
