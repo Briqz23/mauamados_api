@@ -1,30 +1,45 @@
-from fastapi.testclient import TestClient
-from main import app  # replace with the actual name of your FastAPI app
 import pytest
+from fastapi import HTTPException
+from routes.user_route import create_users
 
-client = TestClient(app)
+class TestCreateUsers:
+    @pytest.mark.asyncio
+    async def test_create_users_valid_data(self):
+        valid_user_data = [
+            {
+                "ma_id": 1,
+                "name": "John Doe",
+                "age": 20,
+                "course": "Computer Science",
+                "genero": "Masculino",
+                "sexual_orientation": "Heterossexual",
+                "tags_preferences": ["tag1", "tag2"],
+                "login": "john.doe@maua.br",
+                "senha": "securepassword",
+            }
+        ]
 
-def test_update_user():
-    # Define a sample user to update
-    user = {
-        "name": "New Name",
-        "profile_picture": ["new_photo.jpg"],
-        "age": 25,
-        "course": "New Course",
-        "bio": "New Bio",
-        "genero": "New Gender",
-        "sexual_orientation": "New Orientation",
-        "tags_preferences": ["new_tag"],
-        "match": ["new_match"],
-        "likes": ["new_like"],
-        "login": "new_login@maua.br",
-        "senha": "new_password"
-    }
+        result = await create_users(valid_user_data)
+        assert result
 
-    # Replace 1 with the actual ma_id of the user you want to update
-    response = client.put("/user/1", json=user)
+    @pytest.mark.asyncio
+    async def test_create_users_underage(self):
+        underage_user_data = [
+            {
+                "ma_id": 2,
+                "name": "Jane Doe",
+                "age": 16,
+                "course": "Engineering",
+                "genero": "Feminino",
+                "sexual_orientation": "Heterossexual",
+                "tags_preferences": ["tag1", "tag2"],
+                "login": "jane.doe@maua.br",
+                "senha": "securepassword",
+            }
+        ]
 
-    assert response.status_code == 200
-    assert response.json()["name"] == "New Name"
-    assert "new_photo.jpg" in response.json()["profile_picture"]
-    # Add more assertions for the other fields
+        with pytest.raises(HTTPException) as exc_info:
+            await create_users(underage_user_data)
+        assert exc_info.value.status_code == 400
+
+
