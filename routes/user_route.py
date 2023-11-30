@@ -3,11 +3,11 @@ from fastapi import HTTPException, APIRouter, Response, Query, Path, FastAPI
 import json
 from config.database import collection_name_user
 from models.user_model import User, UpdateUser
-from schemas.user_schema import users_serializer
+from schemas.user_schema import user_serializer, users_serializer
 from bson import ObjectId
 from passlib.context import CryptContext
 from services.services import is_user_over_eighteen, validar_login, validate_password
-
+from fastapi import Body
 
 
 
@@ -26,7 +26,6 @@ async def get_users():
 async def get_user(ma_id: int):
     return users_serializer(collection_name_user.find({"ma_id":ma_id}))
 
-from fastapi import HTTPException
 
 @user_api_router.post("/users")
 async def create_users(users: list[User]):
@@ -55,12 +54,30 @@ async def create_users(users: list[User]):
 
     return users_serializer(created_users)
 
+@user_api_router.post("/user")
+async def create_user(user: User):
+    if not is_user_over_eighteen(user.age):
+        raise HTTPException(status_code=400, detail="Apenas usuários maiores de 18 podem criar a conta")
 
+    if not validate_password(user.senha):
+        raise HTTPException(status_code=400, detail="Senha deve ter ao menos 8 caracteres")
+    
+    if not validar_login(user.login):
+        raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
-@user_api_router.post("/users")
-async def create_users(users: list[User]):
-    _ids = collection_name_user.insert_many([dict(user) for user in users])
-    return users_serializer(collection_name_user.find({"_id": {"$in": _ids.inserted_ids}}))
+    # Hash da senha usando bcrypt
+    hashed_password = password_context.hash(user.senha)
+    
+    # Substituir a senha do usuário pelo hash gerado
+    user.senha = hashed_password
+
+    _id = collection_name_user.insert_one(dict(user))
+    created_user = collection_name_user.find_one({"_id": _id.inserted_id})
+
+    def send_mail():
+        print("Um email de segurança foi enviado para o @maua.br do usuário")
+
+    return user_serializer(created_user)  # replace with your actual serializer function
 
 @user_api_router.delete("/delete_all_users")
 async def delete_all_users():
@@ -259,8 +276,9 @@ async def add_photo(ma_id: int, new_photo: str = Query(...)):
     )
     return {"Daniel, fique tranquilo": "A foto foi adicionada com sucesso!!!"}
 
-@user_api_router.put("/user/photo_new_index/{ma_id}/{photo_to_change}/{new_index}")
-async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
+
+@user_api_router.put("/user/photo_new_index/{ma_id}/{new_index}")
+async def photo_new_index(ma_id: int, new_index: int, photo_to_change: str = Body(...)):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$pull": {"profile_picture": photo_to_change}}
@@ -271,14 +289,14 @@ async def photo_new_index(ma_id: int, photo_to_change: str, new_index: int):
     )
     return {"Daniel, fique tranquilo": "A foto foi alterada de posição com sucesso!!!"}
 
-@user_api_router.delete("user/delete_photo/{ma_id}/{photo_to_delete}")
-async def delete_photo(ma_id:int, photo_to_delete:str):
+
+@user_api_router.delete("/user/delete_photo/{ma_id}")
+async def delete_photo(ma_id: int, photo_to_delete: str = Body(...)):
     collection_name_user.update_many(
         {"ma_id": ma_id},
         {"$pull": {"profile_picture": photo_to_delete}}
     )
     return {"Daniel, fique tranquilo": "A foto foi deletada com sucesso!!!"}
-
 
 @user_api_router.put("/user/change_course/{ma_id}/{new_course}")
 async def change_course(ma_id: int, new_course: str):
