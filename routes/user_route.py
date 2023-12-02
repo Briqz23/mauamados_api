@@ -363,3 +363,24 @@ async def add_match(ma_id:int, match_id:str):
         return{"FOI DANEIL!!!!" : f"Match com a gatinha {match_id} com sucesso, VAI DAR NAMORO!!!! =)"}
     else:
         return HTTPException(status_code=404,detail=f"Poxa Daniel!!!! Num deu pra adcionar o match {match_id}")
+
+@user_api_router.delete("/user/remove_match/{ma_id}/{match_id}")
+async def remove_match(ma_id:int, match_id:str):
+    user = collection_name_user.find_one({"ma_id": ma_id})
+    likes = user.get("likes",[])
+    matches = user.get("match",[])
+    if match_id in matches:
+        matches.remove(match_id)
+        likes.remove(match_id)
+        collection_name_user.update_one(
+            {"ma_id": ma_id},
+            {"$set": {"match": matches}}
+        )
+        collection_name_user.update_one(
+            {"ma_id": ma_id},
+            {"$set": {"likes": likes}}
+        )
+
+        return{"FOI DANIEL!!!!": f"Uma pena, não vai dar namoro =(, a {match_id} era um piteuzinho"}
+    else:
+        return HTTPException(status_code=404,detail=f"Poxa Daniel!!!! Num deu pra remover o match {match_id}")
