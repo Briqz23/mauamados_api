@@ -1,5 +1,6 @@
 import smtplib
 import email.message
+from config.database import collection_name_user
 def is_user_over_eighteen(user_age) ->bool:
     return user_age>=18
 
@@ -9,6 +10,14 @@ def validate_password(senha) -> bool:
 def validar_login(login) -> bool:
     return '@maua.br' in login
 #https://www.youtube.com/watch?v=S465v4mWsRg
+
+def email_exists(email) -> bool:
+    user = collection_name_user.find({"login":email})
+    if user:
+        return True
+    else:
+        return False
+
 def send_mail(login) -> str:
     sender = 'danielbriquez@gmail.com'
     receivers = [login]

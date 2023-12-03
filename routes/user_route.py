@@ -6,7 +6,7 @@ from models.user_model import User, UpdateUser
 from schemas.user_schema import user_serializer, users_serializer
 from bson import ObjectId
 from passlib.context import CryptContext
-from services.services import is_user_over_eighteen, validar_login, validate_password
+from services.services import is_user_over_eighteen, validar_login, validate_password, email_exists
 from fastapi import Body
 
 
@@ -39,6 +39,9 @@ async def create_users(users: list[User]):
         
         if not validar_login(user.login):
             raise HTTPException(status_code=400, detail="login deve ter @maua.br")
+        
+        if email_exists(user.login):
+            raise HTTPException(status_code=400, detail="Poxa Eduardo!!! Não da pra ter duas gatinhas ao mesmo tempo")
 
         # Hash da senha usando bcrypt
         hashed_password = password_context.hash(user.senha)
@@ -65,6 +68,9 @@ async def create_user(user: User):
     if not validar_login(user.login):
         raise HTTPException(status_code=400, detail="login deve ter @maua.br")
 
+    if email_exists(user.login):
+            raise HTTPException(status_code=400, detail="Poxa Eduardo!!! Não da pra ter duas gatinhas ao mesmo tempo")
+
     # Hash da senha usando bcrypt
     hashed_password = password_context.hash(user.senha)
     
@@ -77,7 +83,7 @@ async def create_user(user: User):
     def send_mail():
         print("Um email de segurança foi enviado para o @maua.br do usuário")
 
-    return user_serializer(created_user)  # replace with your actual serializer function
+    return user_serializer(created_user) 
 
 @user_api_router.delete("/delete_all_users")
 async def delete_all_users():
