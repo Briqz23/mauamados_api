@@ -63,7 +63,7 @@ async def add_message(mensagem: Mensagem):
 
     collection_name_conversas.update_one(
         {"_id": conversa["_id"]},
-        {"$push": {"mensagens": mensagem.dict()}}
+        {"$push": {"conversa": mensagem.dict()}}
     )
 
     return {"mensagem_adicionada": mensagem.dict()}
