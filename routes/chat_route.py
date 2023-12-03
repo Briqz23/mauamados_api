@@ -67,3 +67,18 @@ async def add_message(mensagem: Mensagem):
     )
 
     return {"mensagem_adicionada": mensagem.dict()}
+
+@chat_api_router.delete("/delete_chat/{ma_id_1}/{ma_id_2}")
+async def delete_chat(ma_id_1:int, ma_id_2: int):
+    resultado_1 = collection_name_conversas.delete_one(
+        {"ma_id_user1": ma_id_1, "ma_id_user2": ma_id_2}
+    )
+
+    resultado_2 = collection_name_conversas.delete_one(
+        {"ma_id_user1": ma_id_2, "ma_id_user2": ma_id_1}
+    )
+
+    if resultado_1.deleted_count or resultado_2.deleted_count:
+        return {"POXA DANIEL!!!": "Queimando arquivos, o Oliver vai vim te pegar"}
+    else:
+        raise HTTPException(status_code=404, detail="Daniel, a conversa não foi delete, o Oliver ainda vai te pegar")
