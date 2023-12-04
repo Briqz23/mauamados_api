@@ -40,8 +40,6 @@ async def create_users(users: list[User]):
         if not validar_login(user.login):
             raise HTTPException(status_code=400, detail="login deve ter @maua.br")
         
-        if email_exists(user.login):
-            raise HTTPException(status_code=400, detail="Poxa Eduardo!!! Não da pra ter duas gatinhas ao mesmo tempo")
 
         # Hash da senha usando bcrypt
         hashed_password = password_context.hash(user.senha)
@@ -67,9 +65,6 @@ async def create_user(user: User):
     
     if not validar_login(user.login):
         raise HTTPException(status_code=400, detail="login deve ter @maua.br")
-
-    if email_exists(user.login):
-            raise HTTPException(status_code=400, detail="Poxa Eduardo!!! Não da pra ter duas gatinhas ao mesmo tempo")
 
     # Hash da senha usando bcrypt
     hashed_password = password_context.hash(user.senha)
